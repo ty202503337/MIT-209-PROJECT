@@ -15,7 +15,7 @@ The dataset contains detailed information regarding the company's customer base,
 
 **People (Demographics & History)**
 * **ID:** Customer's unique identifier.
-* **Year_Birth:** Customer's birth year.
+* **Year_Birth:** Customer's birth year. 
 * **Education:** Customer's highest education level.
 * **Marital_Status:** Customer's marital status.
 * **Income:** Customer's yearly household income.

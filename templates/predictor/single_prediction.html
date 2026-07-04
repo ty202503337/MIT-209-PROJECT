@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-0 pt-4 pb-2">
+                <h4 class="mb-1 fw-bold text-primary">Customer Prediction Wizard</h4>
+                <p class="text-muted mb-3 small">Complete the sections below to predict marketing campaign response.</p>
+                
+                <!-- Progress Bar -->
+                <div class="progress" style="height: 10px; border-radius: 5px;">
+                    <div id="formProgress" class="progress-bar bg-primary progress-bar-striped progress-bar-animated" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+            
+            <div class="card-body p-4">
+                <form method="POST" id="wizardForm">
+                    {% csrf_token %}
+                    
+                    <!-- STEP 1: Demographics -->
+                    <div class="form-step active" id="step-1">
+                        <h5 class="border-bottom pb-2 mb-3 text-primary"><i class="bi bi-person-lines-fill me-2"></i> Step 1: Demographics</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">{{ form.age|as_crispy_field }}</div>
+                            <div class="col-md-4">{{ form.income|as_crispy_field }}</div>
+                            <div class="col-md-4">{{ form.education_encoded|as_crispy_field }}</div>
+                            <div class="col-md-6">{{ form.kidhome|as_crispy_field }}</div>
+                            <div class="col-md-6">{{ form.teenhome|as_crispy_field }}</div>
+                            
+                            <div class="col-12 mt-3"><label class="form-label text-muted small fw-bold">Marital Status</label></div>
+                            <div class="col-md-3">{{ form.marital_single|as_crispy_field }}</div>
+                            <div class="col-md-3">{{ form.marital_married|as_crispy_field }}</div>
+                            <div class="col-md-3">{{ form.marital_together|as_crispy_field }}</div>
+                            <div class="col-md-3">{{ form.marital_divorced|as_crispy_field }}</div>
+                            <div class="col-md-3">{{ form.marital_widow|as_crispy_field }}</div>
+                            <div class="col-md-3">{{ form.marital_alone|as_crispy_field }}</div>
+                            <div class="col-md-3">{{ form.marital_absurd|as_crispy_field }}</div>
+                            <div class="col-md-3">{{ form.marital_yolo|as_crispy_field }}</div>
+                        </div>
+                        <div class="text-end border-top pt-3">
+                            <button type="button" class="btn btn-primary px-4" onclick="nextStep(1, 2)">Next Step <i class="bi bi-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: Spending Habits -->
+                    <div class="form-step d-none" id="step-2">
+                        <h5 class="border-bottom pb-2 mb-3 text-primary"><i class="bi bi-wallet2 me-2"></i> Step 2: Spending Habits</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">{{ form.mnt_wines|as_crispy_field }}</div>
+                            <div class="col-md-4">{{ form.mnt_fruits|as_crispy_field }}</div>
+                            <div class="col-md-4">{{ form.mnt_meat_products|as_crispy_field }}</div>
+                            <div class="col-md-4">{{ form.mnt_fish_products|as_crispy_field }}</div>
+                            <div class="col-md-4">{{ form.mnt_sweet_products|as_crispy_field }}</div>
+                            <div class="col-md-4">{{ form.mnt_gold_prods|as_crispy_field }}</div>
+                        </div>
+                        <div class="d-flex justify-content-between border-top pt-3">
+                            <button type="button" class="btn btn-outline-secondary px-4" onclick="prevStep(2, 1)"><i class="bi bi-arrow-left"></i> Previous</button>
+                            <button type="button" class="btn btn-primary px-4" onclick="nextStep(2, 3)">Next Step <i class="bi bi-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: Purchasing & Activity -->
+                    <div class="form-step d-none" id="step-3">
+                        <h5 class="border-bottom pb-2 mb-3 text-primary"><i class="bi bi-cart-check me-2"></i> Step 3: Purchasing & Activity</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">{{ form.recency|as_crispy_field }}</div>
+                            <div class="col-md-4">{{ form.num_deals_purchases|as_crispy_field }}</div>
+                            <div class="col-md-4">{{ form.num_web_purchases|as_crispy_field }}</div>
+                            <div class="col-md-4">{{ form.num_catalog_purchases|as_crispy_field }}</div>
+                            <div class="col-md-4">{{ form.num_store_purchases|as_crispy_field }}</div>
+                            <div class="col-md-4">{{ form.num_web_visits_month|as_crispy_field }}</div>
+                        </div>
+                        <div class="d-flex justify-content-between border-top pt-3">
+                            <button type="button" class="btn btn-outline-secondary px-4" onclick="prevStep(3, 2)"><i class="bi bi-arrow-left"></i> Previous</button>
+                            <button type="button" class="btn btn-primary px-4" onclick="nextStep(3, 4)">Next Step <i class="bi bi-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 4: Campaign Interactions -->
+                    <div class="form-step d-none" id="step-4">
+                        <h5 class="border-bottom pb-2 mb-3 text-primary"><i class="bi bi-megaphone me-2"></i> Step 4: Campaign Interactions</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">{{ form.accepted_cmp1|as_crispy_field }}</div>
+                            <div class="col-md-4">{{ form.accepted_cmp2|as_crispy_field }}</div>
+                            <div class="col-md-4">{{ form.accepted_cmp3|as_crispy_field }}</div>
+                            <div class="col-md-4">{{ form.accepted_cmp4|as_crispy_field }}</div>
+                            <div class="col-md-4">{{ form.accepted_cmp5|as_crispy_field }}</div>
+                            <div class="col-md-4">{{ form.complain|as_crispy_field }}</div>
+                        </div>
+                        <div class="d-flex justify-content-between border-top pt-3">
+                            <button type="button" class="btn btn-outline-secondary px-4" onclick="prevStep(4, 3)"><i class="bi bi-arrow-left"></i> Previous</button>
+                            <button type="button" class="btn btn-success px-5 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#confirmPredictionModal"><i class="bi bi-check-circle-fill me-1"></i> Predict Response</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmPredictionModal" tabindex="-1" aria-labelledby="confirmPredictionModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+      <div class="modal-header bg-primary text-white border-0 p-4">
+        <h5 class="modal-title fw-bold" id="confirmPredictionModalLabel"><i class="bi bi-shield-check me-2"></i>Confirm Data Integrity</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <p class="mb-3">You are about to submit this customer profile to the XGBoost AI model for evaluation.</p>
+        <div class="alert border-0 border-start border-4 border-warning bg-warning bg-opacity-10 mb-0 shadow-sm">
+            <h6 class="fw-bold text-warning-emphasis mb-1"><i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>Verify Accuracy</h6>
+            <p class="small text-dark opacity-75 mb-0">Submitting inaccurate data will result in a flawed AI inference and will permanently log incorrect data into your Prediction History database.</p>
+        </div>
+      </div>
+      <div class="modal-footer border-0 bg-light p-3">
+        <button type="button" class="btn btn-light border shadow-sm" data-bs-dismiss="modal">Cancel & Review</button>
+        <button type="button" class="btn btn-success px-4 fw-bold shadow-sm" onclick="document.getElementById('wizardForm').submit();"><i class="bi bi-cpu-fill me-1"></i> Confirm & Predict</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    function updateProgress(step) {
+        let percent = (step / 4) * 100;
+        document.getElementById('formProgress').style.width = percent + '%';
+        document.getElementById('formProgress').setAttribute('aria-valuenow', percent);
+    }
+
+    function nextStep(current, next) {
+        document.getElementById('step-' + current).classList.add('d-none');
+        document.getElementById('step-' + current).classList.remove('active');
+        
+        document.getElementById('step-' + next).classList.remove('d-none');
+        document.getElementById('step-' + next).classList.add('active');
+        
+        updateProgress(next);
+    }
+
+    function prevStep(current, prev) {
+        document.getElementById('step-' + current).classList.add('d-none');
+        document.getElementById('step-' + current).classList.remove('active');
+        
+        document.getElementById('step-' + prev).classList.remove('d-none');
+        document.getElementById('step-' + prev).classList.add('active');
+        
+        updateProgress(prev);
+    }
+</script>
+{% endblock %}

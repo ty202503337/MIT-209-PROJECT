@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mt-4 mb-4 text-center">
+    <div class="col-12">
+        <h2 class="fw-bold text-primary">Data Preparation Strategies</h2>
+        <p class="text-muted fs-5">Evaluating how different data processing techniques impact overall model intelligence.</p>
+    </div>
+</div>
+
+<div class="row mb-5">
+    <!-- Chart Column -->
+    <div class="col-lg-12 mb-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-header bg-white border-0 pt-4 pb-0 text-center">
+                <h4 class="fw-bold mb-0">Average Accuracy Across All Models</h4>
+            </div>
+            <div class="card-body p-4 d-flex justify-content-center">
+                <div style="width: 100%; max-width: 800px;">
+                    <canvas id="datasetChart" height="150"></canvas>
+                </div>
+            </div>
+            <div class="card-footer bg-light p-3 text-center border-0 rounded-bottom-4">
+                <small class="text-muted">This chart averages the performance of Logistic Regression, Random Forest, Gradient Boosting, SVM, and XGBoost on each dataset variant.</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Raw Data -->
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100 border-top border-4" style="border-color: rgba(42, 190, 150, 1) !important;">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white me-3 shadow-sm" style="width: 45px; height: 45px; background-color: rgba(42, 190, 150, 1);">
+                        <i class="bi bi-file-earmark-bar-graph fs-5"></i>
+                    </div>
+                    <h5 class="fw-bold mb-0">Raw Data Baseline</h5>
+                </div>
+                <p class="text-muted small lh-lg">
+                    This dataset underwent basic cleaning (handling missing values, encoding categorical variables like Education and Marital Status). However, the numerical values were left exactly as they were in the real world. It serves as our baseline control group.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scaled Data -->
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100 border-top border-4" style="border-color: rgba(30, 60, 114, 1) !important;">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white me-3 shadow-sm" style="width: 45px; height: 45px; background-color: rgba(30, 60, 114, 1);">
+                        <i class="bi bi-arrows-collapse fs-5"></i>
+                    </div>
+                    <h5 class="fw-bold mb-0">Scaled Data</h5>
+                </div>
+                <p class="text-muted small lh-lg">
+                    Machine learning models can be biased by massive differences in number size (e.g., comparing an 'Income' of 80,000 to an 'Age' of 40). We applied Standardization here to scale all features to have a mean of zero and a variance of one, leveling the mathematical playing field.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PCA Data -->
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100 border-top border-4" style="border-color: rgba(255, 193, 7, 1) !important;">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center text-dark me-3 shadow-sm" style="width: 45px; height: 45px; background-color: rgba(255, 193, 7, 1);">
+                        <i class="bi bi-funnel-fill fs-5"></i>
+                    </div>
+                    <h5 class="fw-bold mb-0">PCA Data</h5>
+                </div>
+                <p class="text-muted small lh-lg">
+                    Using Principal Component Analysis (PCA), we applied dimensionality reduction. This strategy attempts to compress the dataset by removing noise and combining highly correlated features into principal components, keeping only the most important statistical variance.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const chartData = JSON.parse('{{ chart_json|escapejs }}');
+        
+        const ctx = document.getElementById('datasetChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'Avg Accuracy: ' + context.raw + '%';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 14, weight: 'bold' } }
+                    },
+                    y: {
+                        min: 80,
+                        max: 100,
+                        title: { display: true, text: 'Average Accuracy (%)', font: { weight: 'bold' } }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

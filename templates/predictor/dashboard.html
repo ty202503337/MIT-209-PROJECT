@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="mb-4 d-flex justify-content-between align-items-center">
+    <h3 class="fw-bold">Analytics Dashboard</h3>
+    <div>
+        <a href="/predict/" class="btn btn-primary shadow-sm"><i class="bi bi-plus-circle"></i> New Prediction</a>
+        <a href="/bulk/" class="btn btn-outline-primary shadow-sm ms-2"><i class="bi bi-upload"></i> Bulk Upload</a>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-3">
+        <div class="card h-100 shadow-sm border-0 border-start border-primary border-4">
+            <div class="card-body">
+                <h6 class="text-muted fw-bold mb-2 text-uppercase">Total Predictions</h6>
+                <h2 class="mb-0 fw-bold">{{ total_predictions }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100 shadow-sm border-0 border-start border-success border-4">
+            <div class="card-body">
+                <h6 class="text-muted fw-bold mb-2 text-uppercase">Positive Responses</h6>
+                <h2 class="mb-0 fw-bold">{{ positive_responses }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100 shadow-sm border-0 border-start border-info border-4">
+            <div class="card-body">
+                <h6 class="text-muted fw-bold mb-2 text-uppercase">Response Rate</h6>
+                <h2 class="mb-0 fw-bold">{{ response_rate|floatformat:1 }}%</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100 shadow-sm border-0 border-start border-warning border-4">
+            <div class="card-body">
+                <h6 class="text-muted fw-bold mb-2 text-uppercase">Avg Confidence</h6>
+                <h2 class="mb-0 fw-bold">{{ avg_confidence|floatformat:1 }}%</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm border-0 bg-primary text-white" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
+            <div class="card-body p-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h4 class="fw-bold mb-2">Active Model: XGBoost Classifier</h4>
+                        <p class="mb-0 text-white-50">This system is currently powered by an Extreme Gradient Boosting (XGBoost) machine learning model. It analyzes 31 distinct behavioral, demographic, and historical attributes to predict customer responsiveness to upcoming marketing campaigns.</p>
+                    </div>
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <div class="d-inline-block bg-white text-primary rounded p-3 shadow">
+                            <span class="d-block small fw-bold text-uppercase text-muted mb-1">Base Accuracy</span>
+                            <h3 class="mb-0 fw-bold">{{ model_accuracy }}%</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Chart Column -->
+    <div class="col-lg-7">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-0 pt-4 pb-0">
+                <h5 class="fw-bold mb-0">Response Distribution</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="responseChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Table Column -->
+    <div class="col-lg-5">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0">Recent Activity</h5>
+                <a href="/history/" class="btn btn-sm btn-outline-secondary">View All</a>
+            </div>
+            <div class="card-body p-0 mt-3">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Time</th>
+                                <th>Income</th>
+                                <th>Prediction</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rec in recent_predictions %}
+                            <tr>
+                                <td class="ps-4 text-muted small">{{ rec.timestamp|date:"M d, H:i" }}</td>
+                                <td>&#8369;{{ rec.income|floatformat:0 }}</td>
+                                <td>
+                                    {% if rec.prediction_response == 1 %}
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 rounded-pill">
+                                            <i class="bi bi-check-circle-fill me-1"></i> Likely to Accept
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 px-2 py-1 rounded-pill">
+                                            <i class="bi bi-x-circle-fill me-1"></i> Unlikely to Accept
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center py-4 text-muted">No predictions yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var ctx = document.getElementById('responseChart').getContext('2d');
+    var total = {{ total_predictions|default:"0" }};
+    var positive = {{ positive_responses|default:"0" }};
+    var negative = total - positive;
+    
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Positive Response', 'Negative Response'],
+            datasets: [{
+                data: [positive, negative],
+                backgroundColor: ['#198754', '#6c757d'],
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

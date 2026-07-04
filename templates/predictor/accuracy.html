@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-lg-10">
+        <div class="card p-0 shadow-sm border-0">
+            <div class="card-header bg-white p-4">
+                <h4 class="mb-1 fw-bold text-primary">Model Comparison</h4>
+                <p class="text-muted mb-0 small">Comparison of 5 machine learning models evaluated across 3 dataset variants using strict performance metrics.</p>
+            </div>
+            
+            <div class="card-body p-4 border-bottom">
+                <canvas id="accuracyChart" height="100"></canvas>
+            </div>
+            
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0 text-center align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Dataset Variant</th>
+                                <th>Model Algorithm</th>
+                                <th>Accuracy</th>
+                                <th>F1-Score</th>
+                                <th>ROC-AUC</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in records %}
+                            <tr class="{% if row.Model == 'XGBoost' and row.Dataset == 'Scaled' %}table-success fw-bold{% endif %}">
+                                <td>{{ row.Dataset }}</td>
+                                <td>
+                                    {{ row.Model }}
+                                    {% if row.Model == 'XGBoost' and row.Dataset == 'Scaled' %}
+                                        <span class="badge bg-success ms-2 shadow-sm">Deployed</span>
+                                    {% endif %}
+                                </td>
+                                <td>{% widthratio row.Accuracy 1 100 %}%</td>
+                                <td>{{ row.F1_Score|floatformat:4 }}</td>
+                                <td>{{ row.ROC_AUC|floatformat:4 }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-muted">No accuracy data available.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="card-footer bg-light p-3 text-center">
+                <small class="text-muted">Metrics generated during the automated training comparison pipeline. The table above displays exact floating-point metrics, while the chart plots the percentage accuracy.</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const chartData = JSON.parse('{{ chart_json|escapejs }}');
+        
+        const ctx = document.getElementById('accuracyChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: chartData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Model Accuracy Comparison across Datasets',
+                        font: { size: 16 }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.raw + '%';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        min: 80,
+                        max: 100,
+                        title: { display: true, text: 'Accuracy (%)' }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="row mt-4">
+    <div class="col-12 mb-4 text-center">
+        <h2 class="fw-bold text-primary">Bulk CSV Prediction</h2>
+        <p class="text-muted fs-5">Run AI inferences across thousands of customers instantly.</p>
+    </div>
+</div>
+
+<div class="row align-items-stretch mb-5 px-lg-3">
+    <!-- Left Column: The Form -->
+    <div class="col-lg-5 mb-4 mb-lg-0">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 d-flex flex-column">
+            <h4 class="mb-1 fw-bold"><i class="bi bi-cloud-arrow-up-fill text-primary me-2"></i>Upload Dataset</h4>
+            <p class="text-muted small mb-4">Select your CSV file containing the uncontacted leads.</p>
+            
+            <form method="POST" enctype="multipart/form-data" class="flex-grow-1 d-flex flex-column justify-content-center">
+                {% csrf_token %}
+                <div class="bg-light p-4 rounded-3 mb-4 border border-dashed border-2 text-center" style="border-color: #dee2e6;">
+                    <i class="bi bi-filetype-csv text-muted mb-2" style="font-size: 3rem;"></i>
+                    <div class="mt-2 text-start">
+                        {{ form|crispy }}
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-3 fw-bold fs-5 shadow-sm mt-auto"><i class="bi bi-gear-wide-connected me-2"></i>Process Data</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Right Column: Info & Guidelines -->
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100">
+            <div class="row g-0 h-100">
+                <div class="col-md-4 bg-primary text-white d-flex flex-column justify-content-center align-items-center p-4">
+                    <i class="bi bi-rocket-takeoff fs-1 mb-3 drop-shadow"></i>
+                    <h5 class="fw-bold mb-0 text-center">Marketing Scale</h5>
+                </div>
+                <div class="col-md-8 d-flex flex-column justify-content-center">
+                    <div class="card-body p-4 p-xl-5">
+                        <h5 class="fw-bold text-dark mb-2">Why use Bulk Prediction?</h5>
+                        <p class="text-muted small mb-4 lh-lg">
+                            Transition from manual testing to a <strong>mass-scale automated marketing filter</strong>. 
+                            Upload a spreadsheet containing thousands of potential leads. The AI will instantly evaluate every customer and return a new file appended with <strong>Prediction</strong> and <strong>Confidence Score</strong> columns.
+                        </p>
+                        
+                        <!-- Error Prevention Note -->
+                        <div class="alert border-0 border-start border-4 border-info bg-info bg-opacity-10 mb-0 px-3 py-3 shadow-sm rounded-end">
+                            <div class="d-flex">
+                                <i class="bi bi-info-circle-fill text-info fs-4 me-3 mt-1"></i>
+                                <div>
+                                    <h6 class="fw-bold text-info-emphasis mb-1">CSV Format Requirements</h6>
+                                    <p class="mb-0 small text-dark opacity-75">
+                                        Your CSV <strong>must</strong> contain exactly <strong>31 feature columns</strong> (Income, Age, etc.). Do NOT include a "Response" target column.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

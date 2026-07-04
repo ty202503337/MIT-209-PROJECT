@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row align-items-center py-5">
+    <div class="col-lg-6 mb-5 mb-lg-0">
+        <h1 class="display-4 fw-bold text-primary mb-3">Customer Personality Analysis</h1>
+        <h3 class="fw-light text-muted mb-4">Campaign Response Prediction System</h3>
+        <p class="lead mb-5 text-secondary">
+            Harness the power of our cutting-edge <strong>XGBoost Classifier</strong> to predict how your customers will respond to upcoming marketing campaigns. Analyze demographics, spending habits, and past interactions instantly.
+        </p>
+        <div class="d-flex gap-3">
+            <a href="/dashboard/" class="btn btn-primary btn-lg shadow-sm px-5 py-3 rounded-pill fw-bold">
+                <i class="bi bi-speedometer2 me-2"></i> Open Dashboard
+            </a>
+            <a href="/predict/" class="btn btn-outline-secondary btn-lg shadow-sm px-4 py-3 rounded-pill">
+                <i class="bi bi-magic me-2"></i> Run Prediction
+            </a>
+        </div>
+    </div>
+    
+    <div class="col-lg-6 text-center">
+        <!-- Abstract representation of data/ML -->
+        <div class="position-relative">
+            <div class="bg-primary rounded-circle position-absolute top-50 start-50 translate-middle opacity-10 blur-xl" style="width: 400px; height: 400px; filter: blur(60px); z-index: -1;"></div>
+            <img src="{% static 'images/hero.png' %}" alt="Data Analysis Illustration" class="img-fluid drop-shadow" style="max-height: 450px;">
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5 pt-5 text-center border-top">
+    <div class="col-md-4 mb-4">
+        <div class="p-4 bg-white rounded-4 shadow-sm h-100">
+            <i class="bi bi-lightning-charge text-warning fs-1 mb-3 d-block"></i>
+            <h5 class="fw-bold">Lightning Fast</h5>
+            <p class="text-muted small">Get real-time predictions powered by optimized XGBoost architecture.</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="p-4 bg-white rounded-4 shadow-sm h-100">
+            <i class="bi bi-graph-up-arrow text-success fs-1 mb-3 d-block"></i>
+            <h5 class="fw-bold">High Accuracy</h5>
+            <p class="text-muted small">Achieve up to {{ model_accuracy }}% baseline prediction accuracy out of the box.</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="p-4 bg-white rounded-4 shadow-sm h-100">
+            <i class="bi bi-shield-check text-primary fs-1 mb-3 d-block"></i>
+            <h5 class="fw-bold">Production Ready</h5>
+            <p class="text-muted small">Fully integrated MySQL audit logging and bulk CSV upload capabilities.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

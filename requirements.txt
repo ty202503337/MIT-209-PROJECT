@@ -1,0 +1,7 @@
+Django>=4.2
+xgboost==2.0.3
+pandas>=2.0
+scikit-learn
+joblib
+django-crispy-forms
+crispy-bootstrap5
